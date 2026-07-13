@@ -6,6 +6,15 @@ local function fail(job, message)
   ya.preview_widget(job, ui.Text.parse(message):area(job.area):wrap(ui.Wrap.YES))
 end
 
+local function make_links_visible(text)
+  -- mdcat emits OSC 8 hyperlinks. Yazi's ANSI parser drops OSC 8, so keep
+  -- both the label and destination as ordinary visible text.
+  text = text:gsub("\27%]8;;([^\27]*)\27\\(.-)\27%]8;;\27\\", "%2 (%1)")
+  text = text:gsub("\27%]8;;[^\27]*\27\\", "")
+  text = text:gsub("\27%]8;;\27\\", "")
+  return text
+end
+
 function M:peek(job)
   local command = job.args[1] or [[
     CLICOLOR_FORCE=1 FORCE_COLOR=1 mdcat --ansi --local \
@@ -54,7 +63,9 @@ function M:peek(job)
     })
   end
 
-  local text = table.concat(outputs, ""):gsub("\t", string.rep(" ", rt.preview.tab_size))
+  local text = table.concat(outputs, "")
+  text = make_links_visible(text)
+  text = text:gsub("\t", string.rep(" ", rt.preview.tab_size))
   ya.preview_widget(job, ui.Text.parse(text):area(job.area))
 end
 

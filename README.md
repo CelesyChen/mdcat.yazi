@@ -53,6 +53,10 @@ The short `run = "mdcat"` form uses the plugin's built-in command. It:
   terminals;
 - supports Yazi preview scrolling.
 
+Markdown links are converted to visible text such as `a (https://example.com)`
+inside the preview. They are intentionally not interactive, because Yazi's
+text preview does not preserve mdcat's terminal hyperlink metadata.
+
 ## Custom command
 
 The plugin also accepts a shell command in the same style as
