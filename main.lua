@@ -7,8 +7,14 @@ local function fail(job, message)
 end
 
 function M:peek(job)
+  local command = job.args[1] or [[
+    CLICOLOR_FORCE=1 FORCE_COLOR=1 mdcat --ansi --local \
+      --columns="$w" \
+      --theme="$([ "$t" = "dark" ] && echo catppuccin-mocha || echo catppuccin-latte)" \
+      "$1"
+  ]]
   local child, err = Command("sh")
-    :arg({ "-c", job.args[1], "sh", tostring(job.file.path) })
+    :arg({ "-c", command, "sh", tostring(job.file.path) })
     :env("w", job.area.w)
     :env("h", job.area.h)
     :env("t", rt.term.light and "light" or "dark")

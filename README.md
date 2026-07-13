@@ -1,23 +1,82 @@
 # mdcat.yazi
 
-Preview Markdown files in [Yazi](https://github.com/sxyazi/yazi) with
-[mdcat](https://github.com/swsnr/mdcat).
+An external Markdown previewer for [Yazi](https://github.com/sxyazi/yazi),
+powered by [mdcat](https://github.com/swsnr/mdcat).
 
-Install it with:
+Unlike Yazi's built-in code preview, this plugin renders Markdown as a
+terminal document. Headings, lists, links, code blocks, emphasis, and other
+Markdown elements are displayed using mdcat's ANSI output.
 
-```bash
-ya pkg add atareao/mdcat
+## Requirements
+
+- Yazi 26.1.22 or later
+- [mdcat](https://github.com/swsnr/mdcat) available in `PATH`
+
+For example, on macOS or Linux:
+
+```sh
+cargo install mdcat
 ```
 
-Then add this to `yazi.toml`:
+You can verify the installation with:
+
+```sh
+mdcat --version
+```
+
+## Installation
+
+Install the plugin through Yazi's package manager:
+
+```sh
+ya pkg add CelesyChen/mdcat
+```
+
+Yazi will install the repository as `mdcat.yazi` under its plugin directory.
+
+## Configuration
+
+Add the following to `~/.config/yazi/yazi.toml`:
 
 ```toml
-[plugin]
-prepend_previewers = [
-  { url = "*.md", run = 'mdcat -- CLICOLOR_FORCE=1 FORCE_COLOR=1 mdcat --ansi --local --columns="$w" --theme="$([ "$t" = "dark" ] && echo catppuccin-mocha || echo catppuccin-latte)" "$1"' },
-]
+[[plugin.prepend_previewers]]
+url = "*.md"
+run = "mdcat"
 ```
 
-The command uses `$1` for the file path, `$w` for the preview width, and `$t`
-for the terminal theme. Make sure `mdcat` is installed and available in
-`PATH`.
+The short `run = "mdcat"` form uses the plugin's built-in command. It:
+
+- enables ANSI output;
+- avoids loading remote Markdown resources;
+- limits output to the current preview width;
+- selects Catppuccin Mocha for dark terminals and Catppuccin Latte for light
+  terminals;
+- supports Yazi preview scrolling.
+
+## Custom command
+
+The plugin also accepts a shell command in the same style as
+[`piper.yazi`](https://github.com/yazi-rs/plugins/tree/main/piper.yazi). The
+command receives these variables:
+
+| Variable | Meaning |
+| --- | --- |
+| `$1` | Path of the file being previewed |
+| `$w` | Width of the preview area |
+| `$h` | Height of the preview area |
+| `$t` | Terminal theme: `dark` or `light` |
+
+For example:
+
+```toml
+[[plugin.prepend_previewers]]
+url = "*.md"
+run = 'mdcat -- mdcat --ansi --local --columns="$w" "$1"'
+```
+
+The command is executed through `sh -c`, so quote paths and shell arguments
+carefully.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
