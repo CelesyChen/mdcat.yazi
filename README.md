@@ -81,6 +81,11 @@ run = 'mdcat -- mdcat --ansi --local --columns="$w" "$1"'
 The command is executed through `sh -c`, so quote paths and shell arguments
 carefully.
 
+## Known issues
+
+Formula rendering currently does not work in the Yazi preview. mdcat does not
+detect a terminal in this environment, so formulas fail to render.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
